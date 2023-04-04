@@ -402,38 +402,48 @@
          <FINISH <>>>
    <FINISH <>>>>
 
-<DEFINE DO-SCRIPT ("AUX" (CH <>) (UNM ,XUNM) (MUDDLE ,MUDDLE))
-  #DECL ((CH) <OR CHANNEL FALSE> (UNM) STRING (MUDDLE) FIX)
+<DEFINE DO-SCRIPT ("AUX" (CH <>) (UNM ,XUNM) (MUDDLE ,MUDDLE) (ACT "script")
+                         (CACT "Script") (EXT "SCRIPT"))
+  #DECL ((CH) <OR CHANNEL FALSE> (UNM ACT CACT EXT) STRING (MUDDLE) FIX)
+  <COND (<VERB? "#RECO">
+         <SET ACT "record">
+         <SET CACT "Record">
+         <SET EXT "RECORD">)>
   <COND (,MY-SCRIPT
          <DO-UNSCRIPT <>>)>
   <COND (,SCRIPT-CHANNEL
-         <TELL "You are already scripting.">)
+         <TELL "You are already " ,POST-CRLF .ACT "ing.">)
         (<AND
           <OR <G? .MUDDLE 100>
               <AND <SET CH <OPEN "READ" ".FILE." "(DIR)" "DSK" .UNM>>
                    <=? <10 .CH> .UNM>
                    <CLOSE .CH>>>
-          <SET CH <OPEN "PRINT" "ZORK" "SCRIPT" "DSK" .UNM>>>
+          <SET CH <OPEN "PRINT" "ZORK" .EXT "DSK" .UNM>>>
          <PUT <TOP ,INCHAN> 1 (.CH)>
-         <PUT <TOP ,OUTCHAN> 1 (.CH)>
+         <COND (<VERB? "SCRIP">
+                <PUT <TOP ,OUTCHAN> 1 (.CH)>)>
          <SETG SCRIPT-CHANNEL .CH>
          <COND (<L? ,MUDDLE 100>
-                <TELL "Scripting to " ,POST-CRLF ,XUNM ";ZORK SCRIPT">)
+                <TELL .CACT 0 "ing to " ,XUNM>
+                <TELL ";ZORK " ,POST-CRLF .EXT>)
                (T
-                <TELL "Scripting to <" ,POST-CRLF ,XUNM ">ZORK.SCRIPT">)>)
+                <TELL .CACT 0 "ing to <" ,XUNM>
+                <TELL ">ZORK." ,POST-CRLF .EXT>)>)
         (T
          <COND (.CH <CLOSE .CH>)>
-         <TELL "I can't open the script channel.">)>>
+         <TELL "I can't open the " ,POST-CRLF .ACT " channel.">)>>
 
-<DEFINE DO-UNSCRIPT ("OPTIONAL" (VERBOSE T))
-  #DECL ((VERBOSE) <OR ATOM FALSE>)
+<DEFINE DO-UNSCRIPT ("OPTIONAL" (VERBOSE T) "AUX" (CACT "Script"))
+  #DECL ((VERBOSE) <OR ATOM FALSE> (CACT) STRING)
+  <COND (<VERB? "#UNRE">
+         <SET CACT "Record">)>
   <COND (,SCRIPT-CHANNEL
          <PUT <TOP ,INCHAN> 1 ()>
          <PUT <TOP ,OUTCHAN> 1 ()>
          <CLOSE ,SCRIPT-CHANNEL>
          <SETG SCRIPT-CHANNEL <>>
-         <AND .VERBOSE <TELL "Scripting off.">>)
-        (<AND .VERBOSE <TELL "Scripting wasn't on.">>)>>
+         <AND .VERBOSE <TELL .CACT ,POST-CRLF "ing off.">>)
+        (<AND .VERBOSE <TELL .CACT ,POST-CRLF "ing wasn't on.">>)>>
 
 <GDECL (THEN) FIX>
 

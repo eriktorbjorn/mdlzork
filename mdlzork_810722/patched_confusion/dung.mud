@@ -3744,6 +3744,11 @@ L;"funny verbs"
 
 <SADD-ACTION "GO-IN" TIME>      ;"funny verb for room actions when entering"
 
+;"Debug commands"
+
+<SADD-ACTION "#RECO" DO-SCRIPT>
+<SADD-ACTION "#UNRE" DO-UNSCRIPT>
+
 ;"ZORK game commands"
 
 <SADD-ACTION "BRIEF" BRIEF>
