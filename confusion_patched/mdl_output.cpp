@@ -358,7 +358,7 @@ void mdl_print_string_to_chan(mdl_value_t *chan,
         while (tlen--)
         {
             ch = *s++;
-            if (!isspace(ch) && !iscntrl(ch)) len++;
+            if (!isspace(ch) && iscntrl(ch)) len++;
         }
     }
     else if (!mdl_chan_mode_is_output(chan))
